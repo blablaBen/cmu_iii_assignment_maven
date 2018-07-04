@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 /**
  * Hello world!
@@ -36,6 +37,7 @@ public class App
         capitalizeMovieName(ratingInputItems);
 
         Map<Integer, Map<Integer, List<String>>> dataSource = createDataSource(ratingInputItems);
+        List<String> recommendMovie = findRecommendMoviesByAge(35, 5, dataSource);
     }
 
     public static List<RatingInputItem> parseRatingInput(CSVParser csvParser) {
@@ -81,6 +83,31 @@ public class App
             byAgeData.put(item.rating, movieNameByRating);
             result.put(item.userAge, byAgeData);
         }
+        return result;
+    }
+
+    public static List<String> findRecommendMoviesByAge(int age, int maxNumberOfMovie, Map<Integer, Map<Integer, List<String>>> dataSource) {
+        List<String> result = new ArrayList<String>();
+
+        Map<Integer, List<String>> byAgeData = dataSource.get(age);
+
+        int[] ratings = new int[]{5,4,3,2,1};
+        for(int rating: ratings) {
+            if(result.size() <= maxNumberOfMovie) {
+                List<String> movieNameByRating = byAgeData.get(rating);
+
+                for (String movieName : movieNameByRating) {
+                    if (result.size() <= maxNumberOfMovie) {
+                        result.add(movieName);
+                    } else {
+                        break;
+                    }
+                }
+            } else {
+                break;
+            }
+        };
+
         return result;
     }
 
