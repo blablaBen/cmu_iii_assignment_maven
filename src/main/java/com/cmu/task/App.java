@@ -30,21 +30,23 @@ public class App
                 .withTrim());
 
         List<RatingInputItem> ratingInputWithMovieNameAndId = parseRatingInput(csvParser);
-        
+
     }
 
     public static List<RatingInputItem> parseRatingInput(CSVParser csvParser) {
         List result = new ArrayList<RatingInputItem>();
 
         for (CSVRecord csvRecord : csvParser) {
-            RatingInputItem item = new RatingInputItem();
-            item.userID = csvRecord.get("UserID");
-            item.userName = csvRecord.get("UserName");
-            item.userAge = csvRecord.get("UserAge");
-            item.movieID = extractMovieId(csvRecord.get("MovieName"));
-            item.movieName = extractMovieName(csvRecord.get("MovieName"));
-            item.rating = csvRecord.get("Rating");
-            result.add(item);
+            if(csvRecord.getRecordNumber() != 1) {
+                RatingInputItem item = new RatingInputItem();
+                item.userID = csvRecord.get("UserID");
+                item.userName = csvRecord.get("UserName");
+                item.userAge = csvRecord.get("UserAge");
+                item.movieID = extractMovieId(csvRecord.get("MovieName"));
+                item.movieName = extractMovieName(csvRecord.get("MovieName"));
+                item.rating = csvRecord.get("Rating");
+                result.add(item);
+            }
         }
 
         return result;
