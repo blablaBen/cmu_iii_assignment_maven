@@ -30,7 +30,8 @@ public class App
                 .withIgnoreHeaderCase()
                 .withTrim());
 
-        List<RatingInputItem> ratingInputWithMovieNameAndId = parseRatingInput(csvParser);
+        List<RatingInputItem> ratingInputItems = parseRatingInput(csvParser);
+        capitalizeMovieName(ratingInputItems);
 
     }
 
@@ -51,6 +52,13 @@ public class App
         }
 
         return result;
+    }
+
+
+    public static void capitalizeMovieName(List<RatingInputItem> ratingInputItems) {
+        for(RatingInputItem item : ratingInputItems) {
+            item.movieName = StringHelper.getCapitalizedString(item.movieName);
+        }
     }
 
 
