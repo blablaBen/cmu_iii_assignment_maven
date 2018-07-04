@@ -11,7 +11,9 @@ import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Hello world!
@@ -33,6 +35,7 @@ public class App
         List<RatingInputItem> ratingInputItems = parseRatingInput(csvParser);
         capitalizeMovieName(ratingInputItems);
 
+        Map<Integer, Map<Integer, List<String>>> dataSource = createDataSource(ratingInputItems);
     }
 
     public static List<RatingInputItem> parseRatingInput(CSVParser csvParser) {
@@ -43,10 +46,10 @@ public class App
                 RatingInputItem item = new RatingInputItem();
                 item.userID = csvRecord.get("UserID");
                 item.userName = csvRecord.get("UserName");
-                item.userAge = csvRecord.get("UserAge");
+                item.userAge = Integer.parseInt(csvRecord.get("UserAge"));
                 item.movieID = StringHelper.extractMovieId(csvRecord.get("MovieName"));
                 item.movieName = StringHelper.extractMovieName(csvRecord.get("MovieName"));
-                item.rating = csvRecord.get("Rating");
+                item.rating = Integer.parseInt(csvRecord.get("Rating"));
                 result.add(item);
             }
         }
@@ -59,6 +62,26 @@ public class App
         for(RatingInputItem item : ratingInputItems) {
             item.movieName = StringHelper.getCapitalizedString(item.movieName);
         }
+    }
+
+    public static  Map<Integer, Map<Integer, List<String>>> createDataSource(List<RatingInputItem> ratingInputItems) {
+        Map<Integer, Map<Integer, List<String>>> result =  new HashMap<Integer, Map<Integer, List<String>>>();
+        for(RatingInputItem item : ratingInputItems) {
+            Map<Integer, List<String>> byAgeData = result.get(item.userAge);
+            if(byAgeData == null) {
+                byAgeData = new HashMap<Integer, List<String>>();
+            }
+
+            List<String> movieNameByRating = byAgeData.get(item.rating);
+            if(movieNameByRating == null) {
+                movieNameByRating = new ArrayList<String>();
+            }
+            movieNameByRating.add(item.movieName);
+
+            byAgeData.put(item.rating, movieNameByRating);
+            result.put(item.userAge, byAgeData);
+        }
+        return result;
     }
 
 
