@@ -12,7 +12,11 @@ public class StringHelper {
     public  static String getCapitalizedString(String msg) {
         String newString = "";
 
+        int index = 0;
         while(msg.length() != 0) {
+            if(index != 0) {
+                newString += " ";
+            }
             int indexOfSpace = msg.indexOf(" ");
             if(indexOfSpace != -1) {
                 newString += Character.toUpperCase(msg.charAt(0)) + msg.substring(1, indexOfSpace);
@@ -21,6 +25,7 @@ public class StringHelper {
                 newString += Character.toUpperCase(msg.charAt(0)) + msg.substring(1, msg.length());
                 break;
             }
+            index++;
         }
 
         return newString;
