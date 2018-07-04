@@ -1,6 +1,7 @@
 package com.cmu.task;
 
 import com.cmu.task.domain.RatingInputItem;
+import com.cmu.task.helper.StringHelper;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -42,8 +43,8 @@ public class App
                 item.userID = csvRecord.get("UserID");
                 item.userName = csvRecord.get("UserName");
                 item.userAge = csvRecord.get("UserAge");
-                item.movieID = extractMovieId(csvRecord.get("MovieName"));
-                item.movieName = extractMovieName(csvRecord.get("MovieName"));
+                item.movieID = StringHelper.extractMovieId(csvRecord.get("MovieName"));
+                item.movieName = StringHelper.extractMovieName(csvRecord.get("MovieName"));
                 item.rating = csvRecord.get("Rating");
                 result.add(item);
             }
@@ -52,11 +53,5 @@ public class App
         return result;
     }
 
-    public static String extractMovieId(String movieIdAndName) {
-        return movieIdAndName.substring(0, movieIdAndName.indexOf(','));
-    }
 
-    public static String extractMovieName(String movieIdAndName) {
-        return movieIdAndName.substring(movieIdAndName.indexOf(',')+1, movieIdAndName.length());
-    }
 }
