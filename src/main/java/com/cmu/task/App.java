@@ -1,6 +1,8 @@
 package com.cmu.task;
 
+import com.cmu.task.domain.NewUserInputItem;
 import com.cmu.task.domain.RatingInputItem;
+import com.cmu.task.helper.CSVHelper;
 import com.cmu.task.helper.StringHelper;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -25,19 +27,18 @@ public class App
     public static void main( String[] args ) throws IOException
     {
         System.out.println( "Hello World!" );
-        String inputOneFilePath = "/Users/user/Documents/BSB/assignment1-sample/RatingsInput (1).csv";
 
-        Reader reader = Files.newBufferedReader(Paths.get(inputOneFilePath));
-        CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT
-                .withHeader("UserID", "UserName", "UserAge", "MovieID", "MovieName", "Rating")
-                .withIgnoreHeaderCase()
-                .withTrim());
+        CSVParser ratingInputCsvParser = CSVHelper.readRatingInputFile("/Users/user/Documents/BSB/assignment1-sample/RatingsInput (1).csv");
+        List<RatingInputItem> ratingInputItems = parseRatingInput(ratingInputCsvParser);
 
-        List<RatingInputItem> ratingInputItems = parseRatingInput(csvParser);
         capitalizeMovieName(ratingInputItems);
 
         Map<Integer, Map<Integer, List<String>>> dataSource = createDataSource(ratingInputItems);
-        List<String> recommendMovie = findRecommendMoviesByAge(35, 5, dataSource);
+
+        CSVParser newUserCsvParser = CSVHelper.readNewUserInputFile("/Users/user/Documents/BSB/assignment1-sample/NewUsers.csv");
+        List<NewUserInputItem> newUserInputItems = parseNewUserInput(newUserCsvParser);
+
+        fillUserRecommendedMovie(newUserInputItems, dataSource);
     }
 
     public static List<RatingInputItem> parseRatingInput(CSVParser csvParser) {
@@ -52,6 +53,23 @@ public class App
                 item.movieID = StringHelper.extractMovieId(csvRecord.get("MovieName"));
                 item.movieName = StringHelper.extractMovieName(csvRecord.get("MovieName"));
                 item.rating = Integer.parseInt(csvRecord.get("Rating"));
+                result.add(item);
+            }
+        }
+
+        return result;
+    }
+
+    public static List<NewUserInputItem> parseNewUserInput(CSVParser csvParser) {
+        List result = new ArrayList<NewUserInputItem>();
+
+        for (CSVRecord csvRecord : csvParser) {
+            if(csvRecord.getRecordNumber() != 1) {
+                NewUserInputItem item = new NewUserInputItem();
+                item.userName = csvRecord.get("UserName");
+                item.userAge = Integer.parseInt(csvRecord.get("UserAge"));
+                item.noOfMoviesToRecommend = Integer.parseInt(csvRecord.get("noOfMoviesToRecommend"));
+                item.movies = csvRecord.get("movies");
                 result.add(item);
             }
         }
@@ -90,17 +108,19 @@ public class App
         List<String> result = new ArrayList<String>();
 
         Map<Integer, List<String>> byAgeData = dataSource.get(age);
+        if(byAgeData == null){return result;}
 
         int[] ratings = new int[]{5,4,3,2,1};
         for(int rating: ratings) {
-            if(result.size() <= maxNumberOfMovie) {
+            if(result.size() < maxNumberOfMovie) {
                 List<String> movieNameByRating = byAgeData.get(rating);
-
-                for (String movieName : movieNameByRating) {
-                    if (result.size() <= maxNumberOfMovie) {
-                        result.add(movieName);
-                    } else {
-                        break;
+                if(movieNameByRating != null) {
+                    for (String movieName : movieNameByRating) {
+                        if (result.size() < maxNumberOfMovie) {
+                            result.add(movieName);
+                        } else {
+                            break;
+                        }
                     }
                 }
             } else {
@@ -111,5 +131,11 @@ public class App
         return result;
     }
 
+
+    public static void fillUserRecommendedMovie(List<NewUserInputItem> newUserInputItems, Map<Integer, Map<Integer, List<String>>> dataSource) {
+        newUserInputItems.forEach(newUserInputItem -> {
+            newUserInputItem.movies = StringHelper.getStringFromList(findRecommendMoviesByAge(newUserInputItem.userAge, newUserInputItem.noOfMoviesToRecommend, dataSource));
+        });
+    }
 
 }

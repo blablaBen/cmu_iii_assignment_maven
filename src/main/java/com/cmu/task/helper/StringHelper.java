@@ -1,5 +1,7 @@
 package com.cmu.task.helper;
 
+import java.util.List;
+
 public class StringHelper {
     public static String extractMovieId(String movieIdAndName) {
         return movieIdAndName.substring(0, movieIdAndName.indexOf(','));
@@ -29,5 +31,13 @@ public class StringHelper {
         }
 
         return newString;
+    }
+
+    public static String getStringFromList(List<String> input) {
+        String result = "";
+        for(String value: input) {
+            result += value + ",";
+        }
+        return  result;
     }
 }
