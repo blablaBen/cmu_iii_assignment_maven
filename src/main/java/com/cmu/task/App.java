@@ -39,6 +39,9 @@ public class App
         List<NewUserInputItem> newUserInputItems = parseNewUserInput(newUserCsvParser);
 
         fillUserRecommendedMovie(newUserInputItems, dataSource);
+
+        String outputPath = "/Users/user/Documents/BSB/assignment1-sample/outputFile.csv";
+        CSVHelper.generateOutputFile(outputPath, newUserInputItems);
     }
 
     public static List<RatingInputItem> parseRatingInput(CSVParser csvParser) {
@@ -108,7 +111,11 @@ public class App
         List<String> result = new ArrayList<String>();
 
         Map<Integer, List<String>> byAgeData = dataSource.get(age);
-        if(byAgeData == null){return result;}
+        if(byAgeData == null) {
+            int theNearestAvailableAge = findTheNearestAgeAvailable(age, dataSource);
+            byAgeData = dataSource.get(theNearestAvailableAge);
+        }
+
 
         int[] ratings = new int[]{5,4,3,2,1};
         for(int rating: ratings) {
@@ -129,6 +136,24 @@ public class App
         };
 
         return result;
+    }
+
+    public static int findTheNearestAgeAvailable(int age, Map<Integer, Map<Integer, List<String>>> dataSource) {
+        List<Integer> allAvailableAge = new ArrayList<Integer>(dataSource.keySet());
+
+        int theNearestAge = -1;
+        for(Integer userAge : allAvailableAge) {
+            if(theNearestAge == -1) {
+                theNearestAge = userAge;
+            } else {
+                if(Math.abs(age - userAge) < Math.abs(age - theNearestAge)) {
+                    theNearestAge = userAge;
+                }
+            }
+
+        }
+
+        return theNearestAge;
     }
 
 

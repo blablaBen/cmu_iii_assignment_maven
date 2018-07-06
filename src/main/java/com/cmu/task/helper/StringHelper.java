@@ -35,8 +35,11 @@ public class StringHelper {
 
     public static String getStringFromList(List<String> input) {
         String result = "";
-        for(String value: input) {
-            result += value + ",";
+        for(int i = 0 ;i <input.size() ; i++) {
+            result += input.get(i);
+            if(i+1 < input.size()) {
+                result+=",";
+            }
         }
         return  result;
     }
