@@ -12,10 +12,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.IntStream;
 
 /**
@@ -26,23 +23,40 @@ public class App
 {
     public static void main( String[] args ) throws IOException
     {
-        System.out.println( "Hello World!" );
+        String inputPath = "./RatingsInput.csv";
+        String newUserPath = "./NewUsers.csv";
+        String outputPath = "./outputFile.csv";
 
-        CSVParser ratingInputCsvParser = CSVHelper.readRatingInputFile("/Users/user/Documents/BSB/assignment1-sample/RatingsInput (1).csv");
+        /*
+            TO DO: Task 1 - Separate Movie IDs and Movie names.
+         */
+        CSVParser ratingInputCsvParser = CSVHelper.readRatingInputFile(inputPath);
         List<RatingInputItem> ratingInputItems = parseRatingInput(ratingInputCsvParser);
 
+         /*
+            TO DO: Task 2 - String Capitalization - Capitalizing first letter of every word in the movie names.
+         */
         capitalizeMovieName(ratingInputItems);
 
+         /*
+            TO DO: Task 3 - Read in from your new CSV file from Task 2 and parse data into lists and maps.
+         */
         Map<Integer, Map<Integer, List<String>>> dataSource = createDataSource(ratingInputItems);
 
-        CSVParser newUserCsvParser = CSVHelper.readNewUserInputFile("/Users/user/Documents/BSB/assignment1-sample/NewUsers.csv");
+        /*
+            TO DO: Task 4 - Find the recommended movies for a given age from best to worst ratings.
+         */
+        CSVParser newUserCsvParser = CSVHelper.readNewUserInputFile(newUserPath);
         List<NewUserInputItem> newUserInputItems = parseNewUserInput(newUserCsvParser);
-
         fillUserRecommendedMovie(newUserInputItems, dataSource);
 
-        String outputPath = "/Users/user/Documents/BSB/assignment1-sample/outputFile.csv";
+
+        /*
+            TO DO: Task 5 - Recommend movies to users in the second input file.
+         */
         CSVHelper.generateOutputFile(outputPath, newUserInputItems);
     }
+
 
     public static List<RatingInputItem> parseRatingInput(CSVParser csvParser) {
         List result = new ArrayList<RatingInputItem>();
